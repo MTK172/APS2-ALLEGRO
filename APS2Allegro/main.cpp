@@ -19,7 +19,7 @@
 
 bool keys[5] = { false, false, false, false, false };
 
-// Functions
+// Functions - Funções
 void initDragon(Dragon& dragon, int lives);
 void displayDragon(Dragon& dragon);
 void moveDragon(Dragon& dragon);
@@ -37,23 +37,23 @@ void initBackground(float x, float y, float dirx, float diry, float velx, float 
 void updateBackground(Background& bg);
 void displayBackground(Background& bg, ALLEGRO_BITMAP* Background_image);
 int showMenu(ALLEGRO_FONT* font);
-void resetGame(Dragon& dragon, Fireball fireballs[], int number_of_fireballs, Flappy flappy[], int number_of_flappy, Background& bg1, Background& bg2, ALLEGRO_BITMAP* background_image1, ALLEGRO_BITMAP* background_image2);
+void resetGame(Dragon& dragon, Fireball fireballs[], int number_of_fireballs, Flappy flappy[], int number_of_flappy, Background& bg1, Background& bg2, ALLEGRO_BITMAP* background_image1, ALLEGRO_BITMAP* background_image2, int dragon_lives);
 
 
-// Define images globally
+// Define images globally - Define as imagens globalmente
 ALLEGRO_BITMAP* dragon_image;
 ALLEGRO_BITMAP* flappy_image;
 
 int main()
 {
-    // Initializing Allegro
+    // Initializing Allegro - Inicia o Allegro
     if (!al_init())
     {
         al_show_native_message_box(nullptr, "Error", "Failed to initialize Allegro!", nullptr, nullptr, ALLEGRO_MESSAGEBOX_ERROR);
         return -1;
     }
 
-    // Create display
+    // Create display - Cria o display
     ALLEGRO_DISPLAY* display = al_create_display(SCREEN_W, SCREEN_H);
     if (!display)
     {
@@ -70,26 +70,26 @@ int main()
     al_init_image_addon();
     al_install_keyboard();
 
-    //  Load fonts
+    //  Load fonts - Carrega as fontes
     ALLEGRO_FONT* catholic_girls = al_load_font("bloodlust.ttf", 30, 0);
-    ALLEGRO_FONT* font = al_load_font("BlackWidow.ttf", 30, 0);
+    ALLEGRO_FONT* font = al_load_font("RobotoSlab.ttf", 30, 0);
 
-    // Load images
+    // Load images - Carrega as imagens
     ALLEGRO_BITMAP* background_image1 = al_load_bitmap("img/starBG.png");
     ALLEGRO_BITMAP* background_image2 = al_load_bitmap("img/starFG.png");
     dragon_image = al_load_bitmap("img/dragon.png");
     flappy_image = al_load_bitmap("img/flappy.png");
 
-    // Create event queue and timer
+    // Create event queue and timer - Cria fila de eventos e timer
     ALLEGRO_EVENT_QUEUE* event_queue = al_create_event_queue();
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60);
 
-    // Register event sources
+    // Register event sources - Registra a fila de eventos
     al_register_event_source(event_queue, al_get_keyboard_event_source());
     al_register_event_source(event_queue, al_get_display_event_source(display));
     al_register_event_source(event_queue, al_get_timer_event_source(timer));
 
-    // Variables
+    // Variables - Variaveis
     bool workdone = false;
     bool redraw = true;
     bool is_game_over = false;
@@ -107,10 +107,10 @@ int main()
     int dialog_x = (SCREEN_W - DIALOG_WIDTH) / 2;
     int dialog_y = (SCREEN_H - DIALOG_HEIGHT) / 2;
 
-    // Show menu
+    // Show menu - Mostra o menu inicial
     int difficulty = showMenu(font);
 
-    // Difficulty
+    // Difficulty - Dificuldade
     switch (difficulty) {
     case 1: // Easy
         number_of_flappy = 10;
@@ -130,32 +130,32 @@ int main()
         break;
     }
 
-    // Variables
+    // Objects - Objetos
     Dragon dragon;
     Fireball fireballs[number_of_fireballs];
     Flappy* flappy = new Flappy[number_of_flappy];
     Background bg1, bg2;
 
-    // Initialization
+    // Initialization - Inicialização
     initDragon(dragon, dragon_lives);
     initFireballs(fireballs, number_of_fireballs);
     initFlappy(flappy, number_of_flappy);
     initBackground(0, 0, -1, 0, 1, 0, SCREEN_W, SCREEN_H, background_image1, bg1);
     initBackground(0, 0, -1, 0, 1, 0, SCREEN_W, SCREEN_H, background_image2, bg2);
 
-    // Hide mouse cursor
+    // Hide mouse cursor - Esconde cursor do mouse
     al_hide_mouse_cursor(display);
 
-    // Start timer
+    // Start timer - Inicia timer
     al_start_timer(timer);
 
-    // Game loop
+    // Game loop - Loop do jogo
     while (!workdone)
     {
         ALLEGRO_EVENT ev;
         al_wait_for_event(event_queue, &ev);
 
-        // Press key
+        // Press key - Pressiona uma tecla
         if (ev.type == ALLEGRO_EVENT_KEY_DOWN)
         {
             if (!paused)
@@ -186,7 +186,7 @@ int main()
             }
             else if (paused)
             {
-                // Paused
+                // Paused 
                 switch (ev.keyboard.keycode) {
                 case ALLEGRO_KEY_ESCAPE: // Pause
                     paused = !paused;
@@ -196,7 +196,7 @@ int main()
                     break;
                 case ALLEGRO_KEY_R: // Reset
                     if (paused) {
-                        resetGame(dragon, fireballs, number_of_fireballs, flappy, number_of_flappy, bg1, bg2, background_image1, background_image2);
+                        resetGame(dragon, fireballs, number_of_fireballs, flappy, number_of_flappy, bg1, bg2, background_image1, background_image2, dragon_lives);
                         paused = false;
                         show_pause_menu = false;
                         is_game_over = false;
@@ -211,7 +211,7 @@ int main()
             }
         }
 
-        // Press key
+        // Press key - Pressiona tecla
         else if (ev.type == ALLEGRO_EVENT_KEY_UP)
         {
             if (!paused)
@@ -237,7 +237,7 @@ int main()
             }
         }
 
-        // Close window
+        // Close window - fecha a janela
         else if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
         {
             workdone = true;
@@ -269,13 +269,13 @@ int main()
             }
         }
 
-        // Redraw event queue
+        // Redraw event queue - Redesenha a fila de eventos 
         if (redraw && al_is_event_queue_empty(event_queue))
         {
             redraw = false;
             if (!is_game_over)
             {
-                // Draw game
+                // Draw game - Desenha o jogo
                 displayBackground(bg1, background_image1);
                 displayBackground(bg2, background_image2);
                 displayDragon(dragon);
@@ -307,7 +307,7 @@ int main()
 
     }
 
-    // Clear
+    // Clear - Limpeza
     al_destroy_font(font);
     al_destroy_font(catholic_girls);
     al_destroy_bitmap(background_image1);
